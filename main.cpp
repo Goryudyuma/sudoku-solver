@@ -41,13 +41,19 @@ vector<vector<set<long long int>>>change(vector<vector<set<long long int>>>D){
 	}
 
 	for( size_t i = 0; i < 9; i++ ){
-		map<long long int, long long int>m;
+		map<long long int, long long int>m1, m2, m3;
 		for( size_t j = 0; j < 9; j++ ){
 			for( auto x : D[i][j] ){
-				m[x]++;
+				m1[x]++;
+			}
+			for( auto x : D[j][i] ){
+				m2[x]++;
+			}
+			for( auto x : D[i / 3 * 3 + j / 3][i % 3 * 3 + j % 3] ){
+				m3[x]++;
 			}
 		}
-		for( auto y : m ){
+		for( auto y : m1 ){
 			if( y.second == 1 ){
 				for( size_t j = 0; j < 9; j++ ){
 					if( D[i][j].count(y.first) ){
@@ -56,16 +62,7 @@ vector<vector<set<long long int>>>change(vector<vector<set<long long int>>>D){
 				}
 			}
 		}
-	}
-
-	for( size_t i = 0; i < 9; i++ ){
-		map<long long int, long long int>m;
-		for( size_t j = 0; j < 9; j++ ){
-			for( auto x : D[j][i] ){
-				m[x]++;
-			}
-		}
-		for( auto y : m ){
+		for( auto y : m2 ){
 			if( y.second == 1 ){
 				for( size_t j = 0; j < 9; j++ ){
 					if( D[j][i].count(y.first) ){
@@ -74,16 +71,7 @@ vector<vector<set<long long int>>>change(vector<vector<set<long long int>>>D){
 				}
 			}
 		}
-	}
-
-	for( size_t i = 0; i < 9; i++ ){
-		map<long long int, long long int>m;
-		for( size_t j = 0; j < 9; j++ ){
-			for( auto x : D[i / 3 * 3 + j / 3][i % 3 * 3 + j % 3] ){
-				m[x]++;
-			}
-		}
-		for( auto y : m ){
+		for( auto y : m3 ){
 			if( y.second == 1 ){
 				for( size_t j = 0; j < 9; j++ ){
 					if( D[i / 3 * 3 + j / 3][i % 3 * 3 + j % 3].count(y.first) ){
@@ -93,6 +81,7 @@ vector<vector<set<long long int>>>change(vector<vector<set<long long int>>>D){
 			}
 		}
 	}
+
 	if( D_ == D ){
 		return D;
 	} else{
@@ -112,6 +101,7 @@ pair<vector<vector<set<long long int>>>, long long int>find(vector<vector<set<lo
 					Dx[i][j] = set<long long int>{ x };
 					auto ret = find(Dx);
 					sum += ret.second;
+					if( sum > 1 )break;
 					if( ret.second ){
 						memo = ret.first;
 					}
@@ -131,8 +121,10 @@ int main(){
 		cin >> a >> b >> c;
 		if( a == -1 ){
 			auto ret = find(D);
-			D = ret.first;
-			if( ret.second == 1 )break;
+			if( ret.second == 1 ){
+				D = ret.first;
+				break;
+			}
 		} else{
 			D[a][b] = set<long long int>{ c };
 			D = change(D);
